@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "404436991268",
+    "project_id": "fir-experience-32038",
+    "storage_bucket": "fir-experience-32038.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:404436991268:android:48b3f1906f97e204afc7b1",
+        "android_client_info": {
+          "package_name": "com.firebaseexperience"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "404436991268-8904c96n145jenluotoau9hmuttt6q3e.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC9HVbg3c5M4O8Fq_RSTSN3gspuV4zmoak"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "404436991268-8904c96n145jenluotoau9hmuttt6q3e.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
