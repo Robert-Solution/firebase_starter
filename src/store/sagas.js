@@ -16,34 +16,24 @@ import auth from '@react-native-firebase/auth';
 import firestore from '@react-native-firebase/firestore';
 import { Alert } from 'react-native';
 
-export function* initAppSaga() {
-  const onAuthStateChanged = new Promise((resolve, reject) => {
-    auth().onAuthStateChanged(user => {
-      if (user) resolve(user);
-      else reject();
-    });
-  });
+const handleAlert = (title, message) => {
+  Alert.alert(title, message, [{ text: 'OK' }]);
+};
 
-  try {
-    const usersRef = firestore().collection('users');
-    const user = yield onAuthStateChanged;
-
-    const userData = yield usersRef.doc(user.uid).get();
-    const { email, fullname } = userData.data();
-    yield put(loginSuccess({ email, fullname, id: user.uid }));
-  } catch (error) {
-    // Alert.alert(
-    //   'Fail',
-    //   error,
-    //   [
-    //     {
-    //       text: 'Ok',
-    //       style: 'cancel',
-    //     },
-    //   ],
-    //   { cancelable: false },
-    // );
-    yield put(logoutFail());
+export function* authenticationChecking() {
+  const user = auth().currentUser;
+  console.log('user: ', user);
+  if (user) {
+    try {
+      const usersRef = firestore().collection('users');
+      const userData = yield usersRef.doc(user.uid).get();
+      const { email, fullname } = userData.data();
+      yield put(loginSuccess({ email, fullname, id: user.uid }));
+    } catch (error) {
+      handleAlert(error);
+    }
+  } else {
+    yield put(loginFail());
   }
 }
 
@@ -57,14 +47,16 @@ function* registerSaga({ payload }) {
     const data = {
       email: email,
       fullname: fullname,
-      appIdentifier: 'rn-android-universal-listings',
+      password,
     };
     const user_uid = response.user.uid;
     yield firestore().collection('users').doc(user_uid).set(data);
+    yield response.user.sendEmailVerification();
     yield put(registerSuccess());
     RootNavigation.navigate('Login');
   } catch (error) {
     yield put(registerFail());
+    handleAlert(error.name, error.message);
   }
 }
 
@@ -76,7 +68,6 @@ function* loginSaga({ payload }) {
       password,
     );
     const user_uid = response.user.uid;
-    console.log('response: ', response);
 
     const user = yield firestore().collection('users').doc(user_uid).get();
     const { email, fullname } = user.data();
@@ -85,7 +76,7 @@ function* loginSaga({ payload }) {
     RootNavigation.navigate('Home');
   } catch (error) {
     yield put(loginFail());
-    console.log('error: ', error);
+    handleAlert(error.name, error.message);
   }
 }
 
@@ -96,7 +87,7 @@ function* logoutSaga() {
     // RootNavigation.navigate('Home');
   } catch (error) {
     yield put(logoutFail());
-    console.log('error: ', error);
+    handleAlert(error.name, error.message);
   }
 }
 
@@ -105,6 +96,6 @@ export default function* rootSaga() {
     takeEvery(login, loginSaga),
     takeEvery(register, registerSaga),
     takeEvery(logout, logoutSaga),
-    takeEvery(initApp, initAppSaga),
+    takeEvery(initApp, authenticationChecking),
   ]);
 }

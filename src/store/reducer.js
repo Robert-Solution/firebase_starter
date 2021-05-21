@@ -1,4 +1,12 @@
 import { createSlice } from '@reduxjs/toolkit';
+import { persistReducer } from 'redux-persist';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+
+const persistConfig = {
+  key: 'USER',
+  storage: AsyncStorage,
+  whitelist: ['id', 'isLogin', 'email', 'fullname'],
+};
 
 const initialState = {
   fullname: '',
@@ -80,4 +88,4 @@ export const {
   initApp,
 } = userSlice.actions;
 
-export default userSlice.reducer;
+export default persistReducer(persistConfig, userSlice.reducer);
